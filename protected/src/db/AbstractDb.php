@@ -1,4 +1,5 @@
 <?php
+
 namespace src\db;
 
 abstract class AbstractDb

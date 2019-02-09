@@ -2,7 +2,7 @@
 
 class Installator
 {
-    private $_initValues = [
+    private $initValues = [
         'dbname' => 'mysitecms',
         'dbuser' => 'root',
         'dbpass' => 'root',
@@ -17,10 +17,10 @@ class Installator
 
     public function run()
     {
-        if (isset($_GET['lang']))
+        if (isset($GET['lang']))
             \src\I18n::changeLang($_GET['lang']);
 
-        $values = $this->_initValues;
+        $values = $this->initValues;
 
         if (isset($_POST['Install'])) {
 
@@ -38,7 +38,8 @@ class Installator
 
             if (!isset($error)) {
 
-                $createdb = isset($replaces['dbcurrent']) ? '' : 'CREATE DATABASE IF NOT EXISTS `' . $replaces['dbname'] . '` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;';
+                $createdb = isset($replaces['dbcurrent']) ? '' : 'CREATE DATABASE IF NOT EXISTS `' .
+                    $replaces['dbname'] . '` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;';
 
                 $sql = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'mysitecms.sql');
                 $sql = str_replace([
@@ -50,7 +51,7 @@ class Installator
                     '{{%THEMESITE%}}',
                     '{{%LANGSITE%}}',
                     '{{%CONTACTMAIL%}}'
-                    ],
+                ],
                     [
                         $createdb,
                         $replaces['dbname'],
@@ -64,18 +65,22 @@ class Installator
 
                 try {
                     $db = new PDO('mysql:host=' . $replaces['dbhost'], $replaces['dbuser'], $replaces['dbpass']);
-                    $query = $db->prepare("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $replaces['dbname'] . "' ");
+                    $query = $db->prepare("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE 
+                    SCHEMA_NAME = '" . $replaces['dbname'] . "' ");
                     $query->execute();
                     if ($createdb != '' && $query->fetch() !== false) {
-                        $error = "{{%Database of previous installation was found. You need to drop it or select another name for the new one!%}}";
+                        $error = "{{%Database of previous installation was found. You need to drop it or select 
+                        another name for the new one!%}}";
                     } else {
                         $query = $db->prepare($sql);
                         $res = $query->execute();
 
                         if ($res === true) {
                             $success = "<p>{{%Database was successfully created!%}}</p>";
-                            $success .= "<p>{{%Create a file db.php in &laquo;protected&raquo; directory and put in it the next code then save it: %}}</p>";
-                            $text = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'db-sample.php');
+                            $success .= "<p>{{%Create a file db.php in &laquo;protected&raquo; directory and put in it 
+                            the next code then save it: %}}</p>";
+                            $text = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . '..' .
+                                DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'db-sample.php');
                             $text = str_replace([
                                 "'host' => ''",
                                 "'database' => ''",
@@ -89,7 +94,7 @@ class Installator
                             ], $text);
                         }
                     }
-                } catch (PDOException $exception) {
+                } catch (Exception $exception) {
                     $error = '{{%Error while connecting to database!%}} ' . $exception->getMessage();
                 }
             }

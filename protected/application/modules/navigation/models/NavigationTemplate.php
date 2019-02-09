@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\navigation\models;
 
 use src\Database;

@@ -8,61 +8,64 @@ use Exception;
 
 class WebRouter implements RoutingStrategy
 {
-    private static $_moduleName = 'site';
-    private static $_controllerName = 'Index';
-    private static $_actionName = 'Index';
-    private static $_actionParams;
-    private static $_controller;
+    private static $moduleName = 'site';
+    private static $controllerName = 'Index';
+    private static $actionName = 'Index';
+    private static $actionParams;
+    private static $controller;
 
+    /**
+     * @throws Exception
+     */
     public function execute()
     {
         $actionParams = [];
 
-        $routes = $this->_getPrettyUrl($_SERVER['REQUEST_URI']);
+        $routes = $this->getPrettyUrl($_SERVER['REQUEST_URI']);
 
         if ($routes[0] === true)
             $actionParams['isPretty'] = 1;
 
         if (!empty($routes[1])) {
-            self::$_moduleName = strtolower($routes[1]);
+            self::$moduleName = strtolower($routes[1]);
         }
 
-        if (self::$_moduleName == 'assets')
+        if (self::$moduleName == 'assets')
             return;
 
         if (!empty($routes[2])) {
-            self::$_controllerName = ucfirst($routes[2]);
+            self::$controllerName = ucfirst($routes[2]);
         }
 
-        if (strpos(self::$_controllerName, '.') !== false)
+        if (strpos(self::$controllerName, '.') !== false)
             return;
 
-        if (!empty($routes[3]))	{
+        if (!empty($routes[3])) {
 
             if (strpos($routes[3], '=')) {
                 $routes[4] = $routes[3];
                 $routes[3] = 'index';
             }
 
-            self::$_actionName = ucfirst($routes[3]);
+            self::$actionName = ucfirst($routes[3]);
         }
 
-        if (!empty($routes[4]))	{
+        if (!empty($routes[4])) {
             $params = explode('&', $routes[4]);
 
             foreach ($params as $param) {
                 $tmp = explode('=', $param);
                 $actionParams[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : null;
             }
-            self::$_actionParams = $actionParams;
+            self::$actionParams = $actionParams;
         }
 
-        $controllerName = self::$_controllerName . 'Controller';
-        $actionName = 'action' . self::$_actionName;
-        $namespaceController = 'application\\modules\\' . self::$_moduleName . '\\controllers\\' . $controllerName;
+        $controllerName = self::$controllerName . 'Controller';
+        $actionName = 'action' . self::$actionName;
+        $namespaceController = 'application\\modules\\' . self::$moduleName . '\\controllers\\' . $controllerName;
 
         if (!class_exists($namespaceController))
-            throw new Exception(__CLASS__ .': ' . 'No such class &laquo;' . $namespaceController . '&raquo;');
+            throw new Exception(__CLASS__ . ': ' . 'No such class &laquo;' . $namespaceController . '&raquo;');
 
         $controller = new $namespaceController;
 
@@ -72,37 +75,56 @@ class WebRouter implements RoutingStrategy
 
             $controller->$action($actionParams);
 
-        } else throw new Exception(__CLASS__ .': ' . 'No such controller action &laquo;' .$action. '&raquo;');
+        } else throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $action . '&raquo;');
 
     }
 
-    private function _getPrettyUrl($url)
+    /**
+     * @param $url
+     * @return array|mixed
+     */
+    private function getPrettyUrl($url)
     {
         return PrettyUrlManager::convert($url);
     }
 
+    /**
+     * @return string
+     */
     public static function getCurrentModuleName()
     {
-        return self::$_moduleName;
+        return self::$moduleName;
     }
 
+    /**
+     * @return string
+     */
     public static function getCurrentControllerName()
     {
-        return strtolower(self::$_controllerName);
+        return strtolower(self::$controllerName);
     }
 
+    /**
+     * @return string
+     */
     public static function getCurrentActionName()
     {
-        return strtolower(self::$_actionName);
+        return strtolower(self::$actionName);
     }
 
+    /**
+     * @return mixed
+     */
     public static function getCurrentController()
     {
-        return self::$_controller;
+        return self::$controller;
     }
 
+    /**
+     * @return mixed
+     */
     public static function getActionParams()
     {
-        return self::$_actionParams;
+        return self::$actionParams;
     }
 }

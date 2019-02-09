@@ -1,15 +1,16 @@
 <?php
+
 namespace src;
 
 abstract class Controller
 {
-	protected $view;
+    protected $view;
 
-	public function __construct()
-	{
-	    if (method_exists($this, 'init'))
-	        $this->init();
+    public function __construct()
+    {
+        if (method_exists($this, 'init'))
+            $this->init();
 
-		$this->view = new RenderView($this);
-	}
+        $this->view = new RenderView($this);
+    }
 }

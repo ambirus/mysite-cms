@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\navigation\models;
 
 use src\Form;
@@ -6,20 +7,20 @@ use src\Validation;
 
 class NavigationItemsForm extends Form
 {
-    protected $_name = 'NavigationItems';
+    protected $name = 'NavigationItems';
 
     public function __construct($id = null)
     {
         if ($id !== null) {
             $menu = NavigationManager::model()->readItems($id);
-            $this->_values = $menu;
+            $this->values = $menu;
         }
     }
 
 
     public function save()
     {
-        foreach ($this->_values['items'] as $k => $item) {
+        foreach ($this->values['items'] as $k => $item) {
 
             $data['state'] = $item['state'];
             $data['url'] = $item['url'];
@@ -27,12 +28,12 @@ class NavigationItemsForm extends Form
             $data['title'] = $item['title'];
             $data['order_num'] = $item['order_num'];
 
-            if (isset($this->_values['state']) && in_array($k, $this->_values['state'])) {
+            if (isset($this->values['state']) && in_array($k, $this->values['state'])) {
                 $data['state'] = 1;
             } else $data['state'] = 0;
 
-            if (isset($this->_values['order_num']) && isset($this->_values['order_num'][$k])) {
-                $data['order_num'] = $this->_values['order_num'][$k];
+            if (isset($this->values['order_num']) && isset($this->values['order_num'][$k])) {
+                $data['order_num'] = $this->values['order_num'][$k];
             }
 
             if (NavigationItemManager::model()->update($k, $data) === false)

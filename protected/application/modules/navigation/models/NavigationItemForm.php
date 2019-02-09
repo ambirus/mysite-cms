@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\navigation\models;
 
 use application\helpers\TranslitHelper;
@@ -7,8 +8,8 @@ use src\Validation;
 
 class NavigationItemForm extends Form
 {
-    protected $_name = 'NavigationItem';
-    protected $_labels = [
+    protected $name = 'NavigationItem';
+    protected $labels = [
         'url' => '{{%Url%}}',
         'title' => '{{%Title%}}',
         'order_num' => '{{%Order%}}',
@@ -23,12 +24,17 @@ class NavigationItemForm extends Form
         ];
     }
 
+    /**
+     * NavigationItemForm constructor.
+     * @param null $id
+     * @throws \Exception
+     */
     public function __construct($id = null)
     {
         if ($id !== null) {
             $item = NavigationItemManager::model()->read($id);
-            $this->_values = $item;
-            $this->_initvalues = $this->_values;
+            $this->values = $item;
+            $this->initvalues = $this->values;
         }
     }
 
@@ -36,12 +42,12 @@ class NavigationItemForm extends Form
     public function save()
     {
         if ($this->validate()) {
-            $this->_values['alias'] = TranslitHelper::str2url($this->_values['title']);
+            $this->values['alias'] = TranslitHelper::str2url($this->values['title']);
 
-            if (isset($this->_values['id']))
-                return NavigationItemManager::model()->update($this->_values['id'], $this->_values);
+            if (isset($this->values['id']))
+                return NavigationItemManager::model()->update($this->values['id'], $this->values);
 
-            return NavigationItemManager::model()->create($this->_values);
+            return NavigationItemManager::model()->create($this->values);
         }
 
         return false;

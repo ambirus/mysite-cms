@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\site\models;
 
 use application\components\geo\IpManager;
@@ -12,13 +13,14 @@ use src\Validation;
 
 class ContactForm extends Form
 {
-    protected $_name = 'Contacts';
-    protected $_labels = [
+    protected $name = 'Contacts';
+    protected $labels = [
         'name' => '{{%Your name%}}',
         'email' => '{{%Your e-mail%}}',
         'captcha' => '{{%Verification code%}}',
         'message' => '{{%Message%}}',
-        'agreed' => '{{%I agree that my email box will be used solely for feedback and will not be passed on to third parties%}}'
+        'agreed' => '{{%I agree that my email box will be used solely for feedback and will not be passed on 
+        to third parties%}}'
     ];
 
     protected function rules()
@@ -37,11 +39,12 @@ class ContactForm extends Form
             $ip = IpHelper::getClientIp();
             $ipManager = new IpManager($ip);
 
-            $str = '<p><b>Откуда:</b> ' . $ipManager->getCountry() . ', ' . $ipManager->getCity() .' (IP: ' . $ip . ')</p>' . "\n";
+            $str = '<p><b>Откуда:</b> ' . $ipManager->getCountry() . ', ' . $ipManager->getCity() . ' (IP: ' . 
+                $ip . ')</p>' . "\n";
 
-            foreach ($this->_labels as $k => $v) {
+            foreach ($this->labels as $k => $v) {
                 if ($k != 'captcha' && $k != 'agreed') {
-                    $str .= '<p><b>' . I18n::translate($v) . ':</b> ' . $this->_values[$k] . '</p>' . "\n";
+                    $str .= '<p><b>' . I18n::translate($v) . ':</b> ' . $this->values[$k] . '</p>' . "\n";
                 }
             }
 
@@ -50,7 +53,7 @@ class ContactForm extends Form
             $mailing = new Mailing();
             $mailing->addHeaders([
                 "From: " . $config['mail'] . "\r\n",
-                "Reply-To: ". $this->values()['email'] . "\r\n",
+                "Reply-To: " . $this->values()['email'] . "\r\n",
                 "MIME-Version: 1.0\r\n",
                 "Content-Type: text/html; charset=UTF-8\r\n"
             ]);
@@ -59,9 +62,9 @@ class ContactForm extends Form
             $mailing->addReceiver($config['mail']);
 
             if ($mailing->send()) {
-                $this->_values = null;
+                $this->values = null;
                 return true;
-            } else $this->_errors['success'] = '{{%Cannot send your message! Try it again later!%}}';
+            } else $this->errors['success'] = '{{%Cannot send your message! Try it again later!%}}';
         }
 
         return false;

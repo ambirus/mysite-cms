@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\site\models;
 
 use src\Database;
@@ -7,11 +8,11 @@ use src\managers\ModuleManager;
 
 class Template implements Editable
 {
-    private $_module;
+    private $module;
 
     public function __construct()
     {
-        $this->_module = ModuleManager::get('site');
+        $this->module = ModuleManager::get('site');
     }
 
     public function create($data)
@@ -19,6 +20,11 @@ class Template implements Editable
         // TODO: Implement create() method.
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
     public function read($id)
     {
         $db = Database::getInstance();

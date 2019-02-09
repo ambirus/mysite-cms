@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\admin\models;
 
 use src\Form;
@@ -7,22 +8,25 @@ use src\managers\ModuleManager;
 
 class SettingsForm extends Form
 {
-    private $_module;
-    protected $_name = 'Settings';
-    protected $_labels = [
+    private $module;
+    protected $name = 'Settings';
+    protected $labels = [
         'login' => '{{%Admin login%}}',
         'password' => '{{%Admin password%}}',
         'password_repeat' => '{{%Repeat password%}}',
         'last_login' => '{{%Last login%}}'
     ];
 
+    /**
+     * SettingsForm constructor.
+     */
     public function __construct()
     {
-        $this->_module = ModuleManager::get('admin');
-        $config = $this->_module->config();
+        $this->module = ModuleManager::get('admin');
+        $config = $this->module->config();
 
         foreach ($config as $k => $v) {
-            $this->_values[$k] = $v;
+            $this->values[$k] = $v;
         }
     }
 
@@ -38,12 +42,13 @@ class SettingsForm extends Form
     {
         if ($this->validate()) {
 
-            $this->_values['password'] = md5($this->_values['password']);
+            $this->values['password'] = md5($this->values['password']);
 
-            if ($this->_module->save($this->_values) !== false)
+            if ($this->module->save($this->values) !== false) {
                 return true;
+            }
 
-            $this->_errors['success'] = '{{%Errors appeared while saving!%}}';
+            $this->errors['success'] = '{{%Errors appeared while saving!%}}';
         }
 
         return false;

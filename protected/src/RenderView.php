@@ -1,25 +1,32 @@
 <?php
+
 namespace src;
 
-use ErrorException;
+use Exception;
 use src\managers\AssetManager;
 use src\managers\ModuleManager;
 use src\routers\WebRouter;
 
 class RenderView
 {
-    private $_viewsPath;
-	private $_templatesPath;
-    private $_layoutPath;
-	private $_layout;
-	private $_layoutFile;
+    private $viewsPath;
+    private $templatesPath;
+    private $layoutPath;
+    private $layout;
+    private $layoutFile;
 
-	public function __construct($controller)
+    /**
+     * RenderView constructor.
+     * @param $controller
+     * @throws Exception
+     */
+    public function __construct($controller)
     {
         $config = App::config();
 
-        if (!isset($config['appPath']) || trim($config['appPath']) == '')
-            throw new ErrorException('Application path is not defined in config file!');
+        if (!isset($config['appPath']) || trim($config['appPath']) == '') {
+            throw new Exception('Application path is not defined in config file!');
+        }            
 
         $moduleName = WebRouter::getCurrentModuleName();
         $controllerName = WebRouter::getCurrentControllerName();
@@ -28,102 +35,120 @@ class RenderView
 
         if (is_subclass_of($controller, 'application\\modules\\admin\\controllers\\AdminController')) {
             // admin layout
-            $this->_layoutPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'layouts';
-
-
-        } else if (is_dir($config['modulesPath'] . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR. 'layouts')) {
+            $this->layoutPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 
+                'views' . DIRECTORY_SEPARATOR . 'layouts';
+        } elseif (is_dir($config['modulesPath'] . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 
+            'views' . DIRECTORY_SEPARATOR . 'layouts')) {
             // module layout
-            $this->_layoutPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'layouts';
-
+            $this->layoutPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 
+                'views' . DIRECTORY_SEPARATOR . 'layouts';
         } else {
             // site layout
             $themePath = AssetManager::getThemePath(ModuleManager::get('site')->config()['theme']);
-            $this->_layoutPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . 'site' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $themePath . DIRECTORY_SEPARATOR . 'layouts';
+            $this->layoutPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . 'site' . DIRECTORY_SEPARATOR . 
+                'views' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $themePath . DIRECTORY_SEPARATOR . 
+                'layouts';
         }
 
-        $this->_layout = $this->_layoutPath . DIRECTORY_SEPARATOR . 'main.php';
-        $this->_layoutFile = 'main.php';
+        $this->layout = $this->layoutPath . DIRECTORY_SEPARATOR . 'main.php';
+        $this->layoutFile = 'main.php';
 
-        if (file_exists($this->_layout) === false)
-            throw new ErrorException('This &laquo;main&raquo; layout is not found!');
+        if (file_exists($this->layout) === false)
+            throw new Exception('This &laquo;main&raquo; layout is not found!');
 
         // templates
 
-        $this->_viewsPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        $this->viewsPath = $config['modulesPath'] . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR .
+            'views' . DIRECTORY_SEPARATOR;
 
         if (isset($themePath)) {
-            $viewPath = str_replace('layouts', '', $this->_layoutPath);
+            $viewPath = str_replace('layouts', '', $this->layoutPath);
 
             if (is_dir($viewPath . $moduleName)) {
-                $this->_viewsPath = $viewPath . $moduleName . DIRECTORY_SEPARATOR;
+                $this->viewsPath = $viewPath . $moduleName . DIRECTORY_SEPARATOR;
             }
         }
 
-        $this->_templatesPath = $this->_viewsPath . $controllerName . DIRECTORY_SEPARATOR;
-
+        $this->templatesPath = $this->viewsPath . $controllerName . DIRECTORY_SEPARATOR;
     }
 
+    /**
+     * @param $layout
+     */
     public function setLayout($layout)
     {
-        $this->_layout = $this->_layoutPath . DIRECTORY_SEPARATOR . $layout . '.php';
-        $this->_layoutFile = $layout . '.php';
+        $this->layout = $this->layoutPath . DIRECTORY_SEPARATOR . $layout . '.php';
+        $this->layoutFile = $layout . '.php';
     }
 
     public function getLayout()
     {
-        return $this->_layout;
+        return $this->layout;
     }
 
+    /**
+     * @param $view
+     * @param array $params
+     * @throws Exception
+     */
     public function render($view, $params = [])
-	{
-	    $themeItems = $this->_getThemeItems();
+    {
+        $themeItems = $this->getThemeItems();
 
-		if (file_exists($this->_templatesPath . $view . '.php')) {
+        if (file_exists($this->templatesPath . $view . '.php')) {
 
-                ob_start();
-                ob_implicit_flush(false);
-                extract($params, EXTR_OVERWRITE);
+            ob_start();
+            ob_implicit_flush(false);
+            extract($params, EXTR_OVERWRITE);
 
-                require ($this->_templatesPath . $view . '.php');
-                $themeItems['content'] = ob_get_clean();
+            require($this->templatesPath . $view . '.php');
+            $themeItems['content'] = ob_get_clean();
 
-		} else throw new ErrorException('No such template &laquo;' . $view . '&raquo;! ');
+        } else throw new Exception('No such template &laquo;' . $view . '&raquo;! ');
 
         ob_start();
         ob_implicit_flush(false);
         extract($themeItems, EXTR_OVERWRITE);
 
-        require ($this->_layout);
+        require($this->layout);
 
         echo I18n::translate(ob_get_clean());
-	}
+    }
 
-	public function renderPartial($view, $params = [])
+    /**
+     * @param $view
+     * @param array $params
+     * @throws Exception
+     */
+    public function renderPartial($view, $params = [])
     {
-        if (file_exists($this->_templatesPath.$view . '.php')) {
+        if (file_exists($this->templatesPath . $view . '.php')) {
 
             ob_start();
             ob_implicit_flush(false);
             extract($params, EXTR_OVERWRITE);
-            require ($this->_templatesPath . $view . '.php');
+            require($this->templatesPath . $view . '.php');
             echo I18n::translate(ob_get_clean());
 
-        } else throw new ErrorException('No such template &laquo;'. $view .'&raquo;! ');
+        } else throw new Exception('No such template &laquo;' . $view . '&raquo;! ');
         exit;
     }
 
-	private function _getThemeItems()
+    /**
+     * @return array
+     */
+    private function getThemeItems()
     {
         $themeItems = [];
 
-        if ($files = scandir($this->_layoutPath)) {
+        if ($files = scandir($this->layoutPath)) {
             foreach ($files as $file) {
-                if (!in_array($file, ['.', '..', $this->_layoutFile])) {
+                if (!in_array($file, ['.', '..', $this->layoutFile])) {
                     $item = substr($file, 0, -4);
                     ob_start();
                     ob_implicit_flush(false);
 
-                    require ($this->_layoutPath . DIRECTORY_SEPARATOR. $file);
+                    require($this->layoutPath . DIRECTORY_SEPARATOR . $file);
 
                     $themeItems[$item] = ob_get_clean();
                 }

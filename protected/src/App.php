@@ -1,4 +1,5 @@
 <?php
+
 namespace src;
 
 use Exception;
@@ -8,30 +9,39 @@ use src\routers\WebRouter;
 
 class App
 {
-    private static $_config;
+    private static $config;
 
+    /**
+     * App constructor.
+     * @param null $config
+     * @throws Exception
+     */
     public function __construct($config = null)
     {
         if ($config === null)
             throw new Exception('You must pass config into constructor!');
 
-        self::$_config = $config;
+        self::$config = $config;
     }
 
     public static function config()
     {
-        return self::$_config;
+        return self::$config;
     }
 
+    /**
+     * @throws Exception
+     */
     public function run()
-	{
+    {
         (new ModuleManager())->init();
 
-        if (!isset($_SERVER['REQUEST_URI']))
+        if (!isset($_SERVER['REQUEST_URI'])) {
             $router = new Router(new ConsoleRouter());
-        else
+        } else {
             $router = new Router(new WebRouter());
+        }
 
         $router->process();
-	}
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\navigation\models;
 
 use src\Form;
@@ -6,8 +7,8 @@ use src\Validation;
 
 class NavigationForm extends Form
 {
-    protected $_name = 'Navigation';
-    protected $_labels = [
+    protected $name = 'Navigation';
+    protected $labels = [
         'alias' => 'Псевдоним',
         'name' => 'Название',
         'state' => 'Активность'
@@ -25,7 +26,7 @@ class NavigationForm extends Form
         if ($id !== null) {
             $menu = NavigationManager::model()->read($id);
 
-            $this->_values = [
+            $this->values = [
                 'id' => $menu['menu']['id'],
                 'alias' => $menu['menu']['alias'],
                 'name' => $menu['menu']['name'],

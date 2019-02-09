@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\page\models;
 
 use src\Form;
@@ -6,8 +7,8 @@ use src\Validation;
 
 class PageForm extends Form
 {
-    protected $_name = 'Page';
-    protected $_labels = [
+    protected $name = 'Page';
+    protected $labels = [
         'title' => '{{%Page title%}}',
         'body' => '{{%Page body%}}',
         'keywords' => '{{%Keywords%}}',
@@ -22,14 +23,19 @@ class PageForm extends Form
         ];
     }
 
+    /**
+     * PageForm constructor.
+     * @param null $id
+     * @throws \Exception
+     */
     public function __construct($id = null)
     {
-        $this->_model = PageManager::model();
+        $this->model = PageManager::model();
         parent::__construct();
 
         if ($id !== null) {
-            $item = $this->_model->read($id);
-            $this->_values = $item;
+            $item = $this->model->read($id);
+            $this->values = $item;
         }
     }
 
@@ -38,14 +44,14 @@ class PageForm extends Form
     {
         if ($this->validate()) {
 
-            if (isset($this->_values['id'])) {
-                $this->_values['updated_at'] = time();
-                return PageManager::model()->update($this->_values['id'], $this->_values);
+            if (isset($this->values['id'])) {
+                $this->values['updated_at'] = time();
+                return PageManager::model()->update($this->values['id'], $this->values);
             }
 
-            $this->_values['created_at'] = time();
+            $this->values['created_at'] = time();
 
-            return PageManager::model()->create($this->_values);
+            return PageManager::model()->create($this->values);
         }
 
         return false;

@@ -1,119 +1,163 @@
 <?php
+
 namespace src;
 
 use Exception;
 
 abstract class Form
 {
-    protected $_model;
-    protected $_name;
-    protected $_labels;
-    protected $_names;
-    protected $_values;
-    protected $_initvalues;
-    protected $_errors;
+    protected $model;
+    protected $name;
+    protected $labels;
+    protected $names;
+    protected $values;
+    protected $initvalues;
+    protected $errors;
 
     protected function rules()
     {
         return [];
     }
 
+    /**
+     * Form constructor.
+     * @throws Exception
+     */
     public function __construct()
     {
-        if ($this->_name === null)
+        if ($this->name === null) {
             throw new Exception("Name of model should be defined");
-
-        $this->_labels = $this->labels();
-        $this->_names = $this->names();
-    }
-
-    public function validate()
-    {
-        if (sizeof($this->rules()) == 0)
-            return true;
-
-        foreach ($this->_labels as $k => $v) {
-            $this->_errors[$k] = '';
         }
 
-        $validation = new Validation($this->rules(), $this->_values, $this->_initvalues);
+        $this->labels = $this->labels();
+        $this->names = $this->names();
+    }
+
+    /**
+     * @return bool
+     */
+    public function validate()
+    {
+        if (sizeof($this->rules()) == 0) {
+            return true;
+        }
+
+        foreach ($this->labels as $k => $v) {
+            $this->errors[$k] = '';
+        }
+
+        $validation = new Validation($this->rules(), $this->values, $this->initvalues);
 
         if (!$validation->run()) {
+
             $errors = $validation->getErrors();
 
             foreach ($errors as $k => $v) {
-                if (isset($this->_errors[$k]))
-                    $this->_errors[$k] = $v;
+                if (isset($this->_errors[$k])) {
+                    $this->errors[$k] = $v;
+                }
             }
 
-        } else return true;
+            return false;
+        }
 
-        return false;
+        return true;
     }
 
+    /**
+     * @param $data
+     * @return bool
+     */
     public function load($data)
     {
-        if (sizeof($data) > 0 && isset($data[$this->_name])) {
-            foreach ($data[$this->_name] as $k => $v) {
-                $this->_values[$k] = $v;
+        if (sizeof($data) > 0 && isset($data[$this->name])) {
+            foreach ($data[$this->name] as $k => $v) {
+                $this->values[$k] = $v;
             }
             return true;
         }
         return false;
     }
 
-    public function save() {
-
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function save()
+    {
         if ($this->validate()) {
-
-            if ($this->_model === null)
+            if ($this->model === null) {
                 throw new Exception("Model should be defined");
+            }
 
-            if (isset($this->_values['id']))
-                return $this->_model->update($this->_values['id'], $this->_values);
+            if (isset($this->_values['id'])) {
+                return $this->model->update($this->values['id'], $this->values);
+            }
 
-            return $this->_model->create($this->_values);
+            return $this->model->create($this->values);
         }
 
         return false;
     }
 
+    /**
+     * @param null $attribute
+     * @return mixed
+     */
     public function labels($attribute = null)
     {
-        return $attribute !== null ? $this->_labels[$attribute] : $this->_labels;
+        return $attribute !== null ? $this->labels[$attribute] : $this->labels;
     }
 
+    /**
+     * @param null $attribute
+     * @return mixed
+     */
     public function names($attribute = null)
     {
         if ($attribute !== null) {
-            $this->_names[$attribute] = $this->_name . '[' . $attribute . ']';
-            return $this->_names[$attribute];
+            $this->names[$attribute] = $this->name . '[' . $attribute . ']';
+            return $this->names[$attribute];
         }
 
-        foreach ($this->_labels as $k => $v) {
-            $this->_names[$k] = $this->_name . '[' . $k . ']';
+        foreach ($this->labels as $k => $v) {
+            $this->names[$k] = $this->name . '[' . $k . ']';
         }
 
-        return $this->_names;
+        return $this->names;
     }
 
+    /**
+     * @param null $attribute
+     * @return mixed
+     */
     public function values($attribute = null)
     {
-        return $attribute !== null ? $this->_values[$attribute] : $this->_values;
+        return $attribute !== null ? $this->values[$attribute] : $this->values;
     }
 
+    /**
+     * @param null $attribute
+     * @return null
+     */
     public function errors($attribute = null)
     {
         if ($attribute !== null) {
-            if (isset($this->_errors[$attribute]))
-                return $this->_errors[$attribute];
+            if (isset($this->errors[$attribute])) {
+                return $this->errors[$attribute];
+            }
             return null;
         }
 
-        return $this->_errors;
+        return $this->errors;
     }
 
-    public function setError($attribute, $message) {
-        $this->_errors[$attribute] = $message;
+    /**
+     * @param $attribute
+     * @param $message
+     */
+    public function setError($attribute, $message)
+    {
+        $this->errors[$attribute] = $message;
     }
 }

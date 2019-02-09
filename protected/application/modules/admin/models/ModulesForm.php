@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\admin\models;
 
 use src\Form;
@@ -6,8 +7,8 @@ use src\managers\ModuleManager;
 
 class ModulesForm extends Form
 {
-    protected $_name = 'Modules';
-    protected $_labels = [
+    protected $name = 'Modules';
+    protected $labels = [
         'installed' => '{{%Installed%}}',
         'state' => '{{%Active%}}'
     ];
@@ -22,14 +23,17 @@ class ModulesForm extends Form
                 $values['state'] = 0;
                 $values['installed'] = 0;
 
-                if (isset($this->_values['state']) && in_array($alias, $this->_values['state']))
+                if (isset($this->values['state']) && in_array($alias, $this->values['state'])) {
                     $values['state'] = 1;
+                }
 
-                if (isset($this->_values['installed']) && in_array($alias, $this->_values['installed']))
+                if (isset($this->values['installed']) && in_array($alias, $this->values['installed'])) {
                     $values['installed'] = 1;
+                }
 
-                if ($module->save($values) === false)
+                if ($module->save($values) === false) {
                     return false;
+                }
             }
         }
 

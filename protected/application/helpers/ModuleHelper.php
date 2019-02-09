@@ -1,4 +1,5 @@
 <?php
+
 namespace application\helpers;
 
 use src\managers\ModuleManager;

@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\mailing\models;
 
 use src\managers\ModuleManager;
@@ -6,24 +7,32 @@ use src\Form;
 
 class SpamForm extends Form
 {
-    protected $_name = 'Spam';
-    protected $_module;
-    protected $_labels = [
+    protected $name = 'Spam';
+    protected $module;
+    protected $labels = [
         'ips' => '{{%Spam IPs%}}'
     ];
 
+    /**
+     * SpamForm constructor.
+     * @throws \Exception
+     */
     public function __construct()
     {
         $ips = SpamManager::model()->read();
-        $this->_values['ips'] = $ips;
+        $this->values['ips'] = $ips;
     }
 
+    /**
+     * @return bool
+     * @throws \Exception
+     */
     public function save()
     {
-        if (SpamManager::model()->create($this->_values) !== false)
+        if (SpamManager::model()->create($this->values) !== false)
             return true;
 
-        $this->_errors['success'] = '{{%Errors appeared while saving!%}}';
+        $this->errors['success'] = '{{%Errors appeared while saving!%}}';
 
         return false;
     }

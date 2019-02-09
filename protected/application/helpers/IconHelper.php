@@ -1,9 +1,10 @@
 <?php
+
 namespace application\helpers;
 
 class IconHelper
 {
-    private static $_icons = [
+    private static $icons = [
         'cancel' => '<svg class="glyph stroked"><use xlink:href="#stroked-cancel"></use></svg>',
         'calendar' => '<svg class="glyph stroked"><use xlink:href="#stroked-calendar"></use></svg>',
         'coffee-cup' => '<svg class="glyph stroked"><use xlink:href="#stroked-paper-coffee-cup"></use></svg>',
@@ -82,14 +83,14 @@ class IconHelper
         'window' => '<svg class="glyph stroked"><use xlink:href="#stroked-app-window"></use></svg>',
         'window-content' => '<svg class="glyph stroked"><use xlink:href="#stroked-app-window-with-content"></use></svg>'
     ];
-    
+
     public static function get($alias = null)
     {
         if ($alias === null)
-            return self::$_icons;
+            return self::$icons;
 
-        if (isset(self::$_icons[$alias]))
-            return self::$_icons[$alias];
+        if (isset(self::$icons[$alias]))
+            return self::$icons[$alias];
 
         return '';
     }

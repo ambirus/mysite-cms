@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\site\models;
 
 class TemplateManager

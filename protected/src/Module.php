@@ -1,4 +1,5 @@
 <?php
+
 namespace src;
 
 use src\managers\AssetManager;
@@ -10,6 +11,10 @@ abstract class Module
     protected $config;
     protected $commands;
 
+    /**
+     * Module constructor.
+     * @throws \Exception
+     */
     public function __construct()
     {
         $arr = explode('\\', get_class($this));
@@ -23,7 +28,7 @@ abstract class Module
         }
 
         $db = Database::getInstance();
-        
+
         $query = $db->prepare("SELECT * FROM `module_" . $this->alias . "_settings`");
         $query->execute();
 
@@ -50,19 +55,30 @@ abstract class Module
         return $this->alias;
     }
 
+    /**
+     * @param $language
+     * @return array|mixed
+     */
     public function getLang($language)
     {
         $langArr = [];
 
-        $langFile = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'modules' .
-            DIRECTORY_SEPARATOR . $this->alias . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR .  $language. '.php';
+        $langFile = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR
+            . 'modules' . DIRECTORY_SEPARATOR . $this->alias . DIRECTORY_SEPARATOR . 'i18n' . DIRECTORY_SEPARATOR .
+            $language . '.php';
 
-        if (file_exists($langFile))
+        if (file_exists($langFile)) {
             $langArr = require $langFile;
+        }
 
         return $langArr;
     }
 
+    /**
+     * @param $values
+     * @return bool
+     * @throws \Exception
+     */
     public function save($values)
     {
         if (is_array($values)) {
@@ -85,11 +101,13 @@ abstract class Module
                 if (strpos($k, 'name') === false) {
 
                     if (isset($this->config[$k]) && $this->config['installed'] == 1) {
-                        $query = $db->prepare("UPDATE `module_" . $this->alias . "_settings` SET value = :value WHERE alias = :alias");
+                        $query = $db->prepare("UPDATE `module_" . $this->alias . "_settings` SET value = :value WHERE 
+                        alias = :alias");
                         $res = $query->execute([':value' => $value, ':alias' => $k]);
 
-                        if ($res === false)
+                        if ($res === false) {
                             return false;
+                        }
                     }
                 }
             }

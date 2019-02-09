@@ -16,14 +16,6 @@ try {
     $app = new App($config);
     $app->run();
 
-} catch (PDOException $e) {
-
-    echo $i18n->translate('{{%Error while connecting to database!%}}:') . $e->getMessage();
-
-} catch (ErrorException $e) {
-
-    echo $i18n->translate('{{%' . $e->getMessage() . '%}}');
-
 } catch (Exception $e) {
 
     if (isset($config['debug']) && $config['debug'] == 1) {

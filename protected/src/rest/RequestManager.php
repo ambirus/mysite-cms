@@ -1,13 +1,17 @@
 <?php
+
 namespace src\rest;
 
 class RequestManager
 {
-    private static $_class = 'FileGet';
+    private static $class = 'FileGet';
 
+    /**
+     * @return mixed
+     */
     public static function model()
     {
-        $class = __NAMESPACE__ . '\\' .self::$_class;
+        $class = __NAMESPACE__ . '\\' . self::$class;
         return new $class;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\admin\controllers;
 
 use application\modules\admin\models\ModulesForm;
@@ -8,6 +9,9 @@ use src\Url;
 
 class IndexController extends AdminController
 {
+    /**
+     * @throws \Exception
+     */
     public function actionIndex()
     {
         $model = new ModulesForm();

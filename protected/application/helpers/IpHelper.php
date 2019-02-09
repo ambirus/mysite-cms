@@ -1,4 +1,5 @@
 <?php
+
 namespace application\helpers;
 
 class IpHelper

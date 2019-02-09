@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\admin\models;
 
 use src\Form;
@@ -8,8 +9,8 @@ use src\Validation;
 
 class LoginForm extends Form
 {
-    protected $_name = 'Login';
-    protected $_labels = [
+    protected $name = 'Login';
+    protected $labels = [
         'login' => '{{%Admin login%}}',
         'password' => '{{%Admin password%}}',
         'captcha' => '{{%Verification code%}}',
@@ -21,19 +22,25 @@ class LoginForm extends Form
             [['login', 'password'], Validation::REQUIRED]
         ];
 
-        if (ModuleManager::get('site')->config()['captcha'] == 1)
+        if (ModuleManager::get('site')->config()['captcha'] == 1) {
             array_push($rules, ['captcha', Validation::CAPTCHA]);
+        }
 
         return $rules;
     }
 
+    /**
+     * @return bool
+     * @throws \Exception
+     */
     public function save()
     {
         if ($this->validate()) {
-            if (AuthManager::getInstance()->login($this->_values['login'], $this->_values['password']) !== false)
+            if (AuthManager::getInstance()->login($this->values['login'], $this->values['password']) !== false) {
                 return true;
+            }
 
-            $this->_errors['success'] = '{{%The user is not exists!%}}';
+            $this->errors['success'] = '{{%The user is not exists!%}}';
         }
 
         return false;

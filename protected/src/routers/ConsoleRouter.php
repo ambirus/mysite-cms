@@ -9,6 +9,9 @@ use Exception;
 
 class ConsoleRouter implements RoutingStrategy
 {
+    /**
+     * @throws Exception
+     */
     public function execute()
     {
         if (!isset($_SERVER['argv'][1])) {
@@ -54,9 +57,9 @@ class ConsoleRouter implements RoutingStrategy
             return;
         }
 
-        $_moduleName = 'site';
-        $_controllerName = 'Index';
-        $_actionName = 'Index';
+        $moduleName = 'site';
+        $controllerName = 'Index';
+        $actionName = 'Index';
 
         $params = [];
         $actionParams = [];
@@ -70,30 +73,30 @@ class ConsoleRouter implements RoutingStrategy
         $routes = explode('/', $_SERVER['argv'][1]);
 
         if (!empty($routes[0])) {
-            $_moduleName = strtolower($routes[0]);
+            $moduleName = strtolower($routes[0]);
         }
 
         if (!empty($routes[1])) {
-            $_controllerName = ucfirst($routes[1]);
+            $controllerName = ucfirst($routes[1]);
         }
 
         if (!empty($routes[2])) {
-            $_actionName = ucfirst($routes[2]);
+            $actionName = ucfirst($routes[2]);
         }
 
-        if (sizeof($params) > 0)	{
+        if (sizeof($params) > 0) {
             foreach ($params as $param) {
                 $tmp = explode('=', $param);
                 $actionParams[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : null;
             }
         }
 
-        $controllerName = $_controllerName . 'Command';
-        $actionName = 'action' . $_actionName;
-        $namespaceController = 'application\\modules\\' . $_moduleName . '\\commands\\' . $controllerName;
+        $controllerName = $controllerName . 'Command';
+        $actionName = 'action' . $actionName;
+        $namespaceController = 'application\\modules\\' . $moduleName . '\\commands\\' . $controllerName;
 
         if (!class_exists($namespaceController))
-            throw new Exception(__CLASS__ .': ' . 'No such class ' . $namespaceController . "\n");
+            throw new Exception(__CLASS__ . ': ' . 'No such class ' . $namespaceController . "\n");
 
         $controller = new $namespaceController;
 
@@ -103,7 +106,6 @@ class ConsoleRouter implements RoutingStrategy
 
             $controller->$action($actionParams);
 
-        } else throw new Exception(__CLASS__ .': ' . 'No such controller action ' .$action. "\n");
-
+        } else throw new Exception(__CLASS__ . ': ' . 'No such controller action ' . $action . "\n");
     }
 }

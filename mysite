@@ -1,44 +1,31 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * MySite CMS console bootstrap file.
  *
- * @link http://mysite-cms.ru
- * @copyright Copyright (c) 2018 MySite CMS
+ * @link https://github.com/ambirus/mysite-cms
+ * @copyright Copyright (c) 2019 MySite CMS
  */
 
 defined('STDIN') or define('STDIN', fopen('php://stdin', 'r'));
 defined('STDOUT') or define('STDOUT', fopen('php://stdout', 'w'));
 
-use src\App;
-use src\I18n;
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'bootstrap.php';
 $config = require_once __DIR__ . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'console.php';
+
+use src\App;
+use src\I18n;
 
 $i18n = new I18n();
 
 try {
-
     $app = new App($config);
     $app->run();
-
-} catch (PDOException $e) {
-
-    echo $i18n->translate('{{%Error while connecting to database!%}}:') . $e->getMessage();
-
-} catch (ErrorException $e) {
-
-    echo $i18n->translate('{{%' . $e->getMessage() . '%}}');
-
 } catch (Exception $e) {
-
     if (isset($config['debug']) && $config['debug'] == 1) {
-
         $message = $i18n->translate('{{%' . $e->getMessage() . '%}}');
         echo $message . "\n";
         echo $e->getFile() . ', ' . $e->getTraceAsString() . "\n";
-
     }
-
 }

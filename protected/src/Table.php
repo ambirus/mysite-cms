@@ -1,4 +1,5 @@
 <?php
+
 namespace src;
 
 use Exception;
@@ -8,16 +9,22 @@ class Table implements Editable
     protected $table = '{{%table_name%}}';
     protected $limit = 10;
     protected $orderBy = 'id DESC';
-    private $_db;
-    private $_params;
+    private $db;
+    private $params;
 
+    /**
+     * Table constructor.
+     * @param array $params
+     * @throws Exception
+     */
     public function __construct($params = [])
     {
-        if ($this->table == '{{%table_name%}}')
+        if ($this->table == '{{%table_name%}}') {
             throw new Exception("No table name for model of " . get_class($this) . " !");
+        }
 
-        $this->_db = Database::getInstance();
-        $this->_params = $params;
+        $this->db = Database::getInstance();
+        $this->params = $params;
     }
 
     public function getLimit()
@@ -49,6 +56,10 @@ class Table implements Editable
         return $this->table;
     }
 
+    /**
+     * @param $data
+     * @return string
+     */
     public function create($data)
     {
         foreach ($data as $k => $v) {
@@ -57,36 +68,43 @@ class Table implements Editable
             $values[':' . $k] = $v;
         }
 
-        $query = $this->_db->prepare("INSERT INTO " . $this->table . " (" . implode(", ", $keys) . ") 
+        $query = $this->db->prepare("INSERT INTO " . $this->table . " (" . implode(", ", $keys) . ") 
                               VALUES (" . implode(", ", $aliases) . ")");
 
         $res = $query->execute($values);
 
-        if ($res === false)
-            return json_encode($this->_db->errorInfo());
+        if ($res === false) {
+            return json_encode($this->db->errorInfo());
+        }
 
-        return $this->_db->lastInsertId();
+        return $this->db->lastInsertId();
     }
 
+    /**
+     * @param null $id
+     * @param null $step
+     * @return array
+     */
     public function read($id = null, $step = null)
     {
         if ($id === null) {
             $pages = [];
 
             // paging
-            $query = $this->_db->prepare("SELECT COUNT(*) as c FROM " . $this->table);
+            $query = $this->db->prepare("SELECT COUNT(*) AS c FROM " . $this->table);
             $query->execute();
             $pages['total'] = $query->fetch()['c'];
 
-            if (in_array('countOnly', $this->_params))
+            if (in_array('countOnly', $this->params))
                 return $pages['total'];
 
             $pages['limit'] = $this->limit;
-            $offset = $step !== null ? $step * $this->limit -  $this->limit : 0;
+            $offset = $step !== null ? $step * $this->limit - $this->limit : 0;
 
             //
 
-            $query = $this->_db->prepare("SELECT * FROM " . $this->table . " ORDER BY " . $this->orderBy . " LIMIT ". $this->limit . ' OFFSET ' . $offset);
+            $query = $this->db->prepare("SELECT * FROM " . $this->table . " ORDER BY " . $this->orderBy . " LIMIT " .
+                $this->limit . ' OFFSET ' . $offset);
             $query->execute();
 
             while ($answer = $query->fetch()) {
@@ -97,43 +115,60 @@ class Table implements Editable
 
         } else {
 
-            $query = $this->_db->prepare("SELECT * FROM " . $this->table . " WHERE id = :id");
+            $query = $this->db->prepare("SELECT * FROM " . $this->table . " WHERE id = :id");
             $query->execute([':id' => $id]);
 
             return $query->fetch();
         }
     }
 
+    /**
+     * @param $id
+     * @param $data
+     * @return string
+     */
     public function update($id, $data)
     {
         foreach ($data as $k => $v) {
-            $aliases[] = $k .'=' . ':' . $k;
+            $aliases[] = $k . '=' . ':' . $k;
             $values[':' . $k] = $v;
         }
         $values[':id'] = $id;
 
-        $query = $this->_db->prepare("UPDATE " . $this->tableName() . " SET " . implode(", ", $aliases) . "  WHERE id = :id");
+        $query = $this->db->prepare("UPDATE " . $this->tableName() . " SET " . implode(", ", $aliases) .
+            "  WHERE id = :id");
 
         $res = $query->execute($values);
 
-        if ($res === false)
-            return json_encode($this->_db->errorInfo());
+        if ($res === false) {
+            return json_encode($this->db->errorInfo());
+        }
 
         return $res;
     }
 
+    /**
+     * @param $id
+     * @return string
+     */
     public function delete($id)
     {
-        $query = $this->_db->prepare("DELETE FROM " . $this->tableName() . " WHERE id = :id");
+        $query = $this->db->prepare("DELETE FROM " . $this->tableName() . " WHERE id = :id");
 
         $res = $query->execute([':id' => $id]);
 
-        if ($res === false)
-            return json_encode($this->_db->errorInfo());
+        if ($res === false) {
+            return json_encode($this->db->errorInfo());
+        }
 
         return $res;
     }
 
+    /**
+     * @param $condition
+     * @param null $step
+     * @return array
+     */
     public function readBy($condition, $step = null)
     {
         if (is_array($condition)) {
@@ -151,19 +186,19 @@ class Table implements Editable
         $pages = [];
 
         // paging
-        $query = $this->_db->prepare("SELECT COUNT(*) as c FROM " . $this->table . " WHERE " . implode(" AND ", $conditions));
+        $query = $this->db->prepare("SELECT COUNT(*) AS c FROM " . $this->table . " WHERE " . implode(" AND ", $conditions));
         $query->execute($values);
         $pages['total'] = $query->fetch()['c'];
 
-        if (in_array('countOnly', $this->_params))
+        if (in_array('countOnly', $this->params))
             return $pages['total'];
 
         $pages['limit'] = $this->limit;
-        $offset = $step !== null ? $step * $this->limit -  $this->limit : 0;
+        $offset = $step !== null ? $step * $this->limit - $this->limit : 0;
 
         //
 
-        $query = $this->_db->prepare("SELECT * FROM " . $this->table . " WHERE " . implode(" AND ", $conditions) . " ORDER BY " . $this->orderBy . " LIMIT ". $this->limit . ' OFFSET ' . $offset);
+        $query = $this->db->prepare("SELECT * FROM " . $this->table . " WHERE " . implode(" AND ", $conditions) . " ORDER BY " . $this->orderBy . " LIMIT " . $this->limit . ' OFFSET ' . $offset);
         $query->execute($values);
 
         while ($answer = $query->fetch()) {
@@ -171,6 +206,5 @@ class Table implements Editable
         }
 
         return $pages;
-
     }
 }

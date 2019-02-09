@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\mailing\models;
 
 use src\Editable;
@@ -11,6 +12,11 @@ class Spam implements Editable
         return 'module_mailing_spam';
     }
 
+    /**
+     * @param $data
+     * @return mixed
+     * @throws \Exception
+     */
     public function create($data)
     {
         $db = Database::getInstance();
@@ -24,6 +30,11 @@ class Spam implements Editable
 
     }
 
+    /**
+     * @param null $id
+     * @return mixed
+     * @throws \Exception
+     */
     public function read($id = null)
     {
         $db = Database::getInstance();

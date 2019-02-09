@@ -1,4 +1,5 @@
 <?php
+
 namespace application\modules\mailing\models;
 
 use src\managers\ModuleManager;
@@ -7,9 +8,9 @@ use src\Validation;
 
 class SettingsForm extends Form
 {
-    protected $_name = 'Settings';
-    protected $_module;
-    protected $_labels = [
+    protected $name = 'Settings';
+    protected $module;
+    protected $labels = [
         'mailType' => '{{%Mailing type%}}'
     ];
 
@@ -20,13 +21,16 @@ class SettingsForm extends Form
         ];
     }
 
+    /**
+     * SettingsForm constructor.
+     */
     public function __construct()
     {
-        $this->_module = ModuleManager::get('mailing');
-        $config = $this->_module->config();
+        $this->module = ModuleManager::get('mailing');
+        $config = $this->module->config();
 
         foreach ($config as $k => $v) {
-            $this->_values[$k] = $v;
+            $this->values[$k] = $v;
         }
     }
 
@@ -34,10 +38,10 @@ class SettingsForm extends Form
     {
         if ($this->validate()) {
 
-            if ($this->_module->save($this->_values) !== false)
+            if ($this->module->save($this->values) !== false)
                 return true;
 
-            $this->_errors['success'] = '{{%Errors appeared while saving!%}}';
+            $this->errors['success'] = '{{%Errors appeared while saving!%}}';
         }
 
         return false;
