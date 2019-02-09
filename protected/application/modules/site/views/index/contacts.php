@@ -5,7 +5,7 @@ $description = '';
 ?>
 
 <div class="docs-content-full">
-    <h2><?=$title?></h2>
+    <h2><?= $title ?></h2>
     <div>
         <?php if ($success !== null) : ?>
             <div class="alert">
@@ -27,31 +27,33 @@ $description = '';
         <form id="contactsForm" method="post">
             <table id="contacts">
                 <tr>
-                    <td><?=($model->labels('name'))?></td>
+                    <td><?= ($model->labels('name')) ?></td>
                     <td>
-                        <input type="text" name="<?=$model->names('name')?>" value="<?=$model->values('name')?>">
-                        <div class="error"><?=($model->errors('name'))?></div>
+                        <input type="text" name="<?= $model->names('name') ?>" value="<?= $model->values('name') ?>">
+                        <div class="error"><?= ($model->errors('name')) ?></div>
                     </td>
                 </tr>
                 <tr>
-                    <td><?=($model->labels('email'))?></td>
+                    <td><?= ($model->labels('email')) ?></td>
                     <td>
-                        <input type="text" name="<?=$model->names('email')?>" value="<?=$model->values('email')?>">
-                        <div class="error"><?=($model->errors('email'))?></div>
+                        <input type="text" name="<?= $model->names('email') ?>" value="<?= $model->values('email') ?>">
+                        <div class="error"><?= ($model->errors('email')) ?></div>
                     </td>
                 </tr>
                 <tr>
-                    <td><?=($model->labels('message'))?></td>
+                    <td><?= ($model->labels('message')) ?></td>
                     <td>
-                        <textarea name="<?=$model->names('message')?>" rows="10"><?=$model->values('message')?></textarea>
-                        <div class="error"><?=($model->errors('message'))?></div>
+                        <textarea name="<?= $model->names('message') ?>"
+                                  rows="10"><?= $model->values('message') ?></textarea>
+                        <div class="error"><?= ($model->errors('message')) ?></div>
                     </td>
                 </tr>
                 <tr>
-                    <td><?=($model->labels('captcha'))?></td>
+                    <td><?= ($model->labels('captcha')) ?></td>
                     <td>
-                        <input type="text" name="<?=$model->names('captcha')?>" value="<?=$model->values('captcha')?>">
-                        <div class="error"><?=($model->errors('captcha'))?></div>
+                        <input type="text" name="<?= $model->names('captcha') ?>"
+                               value="<?= $model->values('captcha') ?>">
+                        <div class="error"><?= ($model->errors('captcha')) ?></div>
                         <div id="captcha"><img src="/site/index/captcha" alt=""></div>
                     </td>
                 </tr>
@@ -59,13 +61,15 @@ $description = '';
                     <td colspan="2">
                         <table class="agree">
                             <tr>
-                                <td><input type="checkbox" name="<?=$model->names('agreed')?>" value="1"></td>
-                                <td><small><?=($model->labels('agreed'))?></small></td>
+                                <td><input type="checkbox" name="<?= $model->names('agreed') ?>" value="1"></td>
+                                <td>
+                                    <small><?= ($model->labels('agreed')) ?></small>
+                                </td>
                             </tr>
                             <tr>
                                 <td>&nbsp;</td>
                                 <td>
-                                    <div class="error"><?=($model->errors('agreed'))?></div>
+                                    <div class="error"><?= ($model->errors('agreed')) ?></div>
                                 </td>
                             </tr>
                         </table>

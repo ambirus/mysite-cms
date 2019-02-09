@@ -19,8 +19,7 @@ class ContactForm extends Form
         'email' => '{{%Your e-mail%}}',
         'captcha' => '{{%Verification code%}}',
         'message' => '{{%Message%}}',
-        'agreed' => '{{%I agree that my email box will be used solely for feedback and will not be passed on 
-        to third parties%}}'
+        'agreed' => '{{%I agree that my email box will be used solely for feedback and will not be passed on to third parties%}}'
     ];
 
     protected function rules()
